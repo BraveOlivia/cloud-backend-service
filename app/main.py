@@ -1,6 +1,10 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 from typing import Optional
+from sqlalchemy import func
+from app.schemas.stats import EventStats
+
+
 
 from app.db.database import engine, Base
 from app.db.session import get_db
@@ -45,3 +49,13 @@ def get_events(
         query = query.filter(Event.source_id == source_id)
 
     return query.all()
+
+@app.get("/events/stats", response_model=EventStats)
+def get_event_stats(db: Session = Depends(get_db)):
+    total = db.query(func.count(Event.id)).scalar()
+    avg = db.query(func.avg(Event.value)).scalar()
+
+    return {
+        "total_events": total,
+        "average_value": avg
+    }
