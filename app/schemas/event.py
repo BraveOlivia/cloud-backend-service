@@ -1,10 +1,11 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 
 class EventCreate(BaseModel):
     source_id: str
     category: str
-    value: float
+    value: float = Field(ge=0)
+
 
 class EventResponse(EventCreate):
     id: int
